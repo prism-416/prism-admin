@@ -1,0 +1,113 @@
+@import "tailwindcss";
+
+:root {
+  --color-navy-950: #0B1533;
+  --color-navy-900: #111C3D;
+  --color-navy-800: #1A274A;
+  --color-blue-950: #060C1F;
+  --prism-spectrum-lavender: #B8A4FF;
+  --prism-spectrum-sky: #80C0FF;
+  --prism-spectrum-mint: #A8E7D0;
+  --prism-spectrum-gold: #F2D6A2;
+  --prism-spectrum-violet: #9C7CFF;
+  --color-neutral-0: #FFFFFF;
+  --color-neutral-50: #F8FAFC;
+  --color-neutral-100: #F1F5F9;
+  --color-neutral-200: #E2E8F0;
+  --color-neutral-400: #94A3B8;
+  --color-neutral-500: #64748B;
+  --color-neutral-700: #334155;
+  --success: #16A34A;
+  --success-soft: #E8F8EF;
+  --warning: #B7791F;
+  --warning-soft: #FFF4D8;
+  --error: #DC2626;
+  --error-soft: #FEE2E2;
+  --info: #2563EB;
+  --info-soft: #E7F0FF;
+  --background: var(--color-neutral-50);
+  --foreground: var(--color-neutral-700);
+  --heading: var(--color-navy-950);
+  --surface: rgba(255, 255, 255, 0.78);
+  --surface-strong: var(--color-neutral-0);
+  --surface-field: rgba(255, 255, 255, 0.92);
+  --surface-field-soft: rgba(248, 250, 252, 0.78);
+  --border: rgba(148, 163, 184, 0.38);
+  --border-strong: rgba(11, 21, 51, 0.22);
+  --primary: var(--color-navy-950);
+  --primary-foreground: var(--color-neutral-0);
+  --secondary: #F0EDFF;
+  --secondary-foreground: var(--color-navy-950);
+  --muted: var(--color-neutral-500);
+  --muted-foreground: var(--color-neutral-500);
+  --accent: var(--prism-spectrum-violet);
+  --accent-foreground: var(--color-neutral-0);
+  --ring: rgba(156, 124, 255, 0.42);
+  --input: rgba(148, 163, 184, 0.42);
+  --destructive: var(--error);
+  --destructive-foreground: var(--color-neutral-0);
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-prism-muted: var(--muted);
+  --color-prism-body: var(--foreground);
+  --color-prism-heading: var(--heading);
+  --color-prism-cream: var(--color-neutral-100);
+  --color-prism-teal-500: #2FAE95;
+  --color-prism-navy: var(--color-navy-950);
+  --color-prism-navy-deep: var(--color-blue-950);
+  --color-prism-sand-soft: var(--color-neutral-100);
+  --color-prism-sand: var(--color-neutral-200);
+  --color-prism-glow-gold: var(--prism-spectrum-gold);
+  --color-prism-glow-magenta: var(--prism-spectrum-lavender);
+  --color-prism-glow-violet: var(--prism-spectrum-violet);
+  --color-prism-glow-sky: var(--prism-spectrum-sky);
+  --color-prism-glow-mint: var(--prism-spectrum-mint);
+  --color-prism-success: var(--success);
+  --color-prism-success-soft: var(--success-soft);
+  --color-prism-warning: var(--warning);
+  --color-prism-warning-soft: var(--warning-soft);
+  --color-prism-info: var(--info);
+  --color-prism-info-soft: var(--info-soft);
+  --color-prism-danger: var(--error);
+  --color-prism-danger-soft: var(--error-soft);
+  --color-prism-surface-field: var(--surface-field);
+  --color-prism-surface-field-soft: var(--surface-field-soft);
+  --font-sans: var(--font-pretendard);
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 16% 8%, rgba(184, 164, 255, 0.18), transparent 24rem),
+    radial-gradient(circle at 86% 18%, rgba(128, 192, 255, 0.16), transparent 22rem),
+    var(--background);
+  color: var(--foreground);
+  font-family: var(--font-pretendard), -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
