@@ -220,6 +220,7 @@ Prizmatic NestJS backend:
 - Local backend: `http://localhost:3000/docs`
 - Local OpenAPI JSON: `http://localhost:3000/docs-json`
 - Deployed development API docs, if enabled: `https://api.prizmatic.app/dev/docs`
+- Deployed development OpenAPI JSON: `https://api.prizmatic.app/dev/docs-json`
 
 The admin frontend API client lives in `src/domains/admin/api.ts`, and request
 and response types live in `src/domains/admin/types.ts`. Keep those files in
@@ -249,6 +250,38 @@ The admin dashboard currently targets these backend endpoints:
 
 All admin requests require `x-admin-password`. Mutating requests may include
 `x-admin-reason` for audit context.
+
+The admin dashboard does not call internal worker endpoints directly. It issues,
+updates, and revokes the internal bearer tokens that workers use with the
+OpenAPI `internal` security scheme. The deployed development OpenAPI JSON
+currently documents these internal service-token endpoints:
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `GET` | `/projects/{projectId}/work-items/internal` | Search work items for internal workers |
+| `POST` | `/projects/{projectId}/work-items/internal` | Create work item for internal workers |
+| `GET` | `/projects/{projectId}/work-items/internal/{itemId}` | Get work item detail for internal workers |
+| `PATCH` | `/projects/{projectId}/work-items/internal/{itemId}` | Update work item for internal workers |
+| `DELETE` | `/projects/{projectId}/work-items/internal/{itemId}` | Delete work item for internal workers |
+| `GET` | `/projects/{projectId}/work-items/internal/{itemId}/children` | Get work item children for internal workers |
+| `PUT` | `/projects/{projectId}/work-items/internal/{itemId}/embedding` | Upsert work item embedding for internal workers |
+| `PATCH` | `/projects/{projectId}/work-items/internal/reorder` | Reorder top-level work items for internal workers |
+| `GET` | `/workspaces/{workspaceId}/agent-runs/internal/{runId}/state` | Retrieve agent run state for internal workers |
+| `PATCH` | `/workspaces/{workspaceId}/agent-runs/internal/{runId}/status` | Update agent run status for internal workers |
+| `POST` | `/workspaces/{workspaceId}/agent-runs/internal/{runId}/steps` | Upsert agent run step for internal workers |
+| `POST` | `/workspaces/{workspaceId}/agent-runs/internal/{runId}/actions` | Upsert agent action for internal workers |
+| `POST` | `/workspaces/{workspaceId}/agent-actions/internal/{actionId}/events` | Create agent action event for internal workers |
+| `POST` | `/workspaces/{workspaceId}/embedding-jobs/internal/claim` | Claim queued embedding jobs for internal workers |
+| `PATCH` | `/workspaces/{workspaceId}/embedding-jobs/internal/{embeddingJobId}` | Update embedding job status for internal workers |
+| `POST` | `/workspaces/{workspaceId}/sprints/internal` | Create sprint for internal workers |
+| `PATCH` | `/workspaces/{workspaceId}/sprints/internal/{sprintId}` | Update sprint metadata for internal workers |
+| `DELETE` | `/workspaces/{workspaceId}/sprints/internal/{sprintId}` | Delete sprint for internal workers |
+| `POST` | `/workspaces/{workspaceId}/sprints/internal/{sprintId}/work-items` | Add work items to sprint for internal workers |
+| `DELETE` | `/workspaces/{workspaceId}/sprints/internal/{sprintId}/work-items/{itemId}` | Remove work item from sprint for internal workers |
+
+The service token scope picker is aligned to the current backend scope enum:
+`agents:invoke`, `documents:read`, `documents:write`, `embeddings:write`,
+`projects:read`, `projects:write`, and `sprints:write`.
 
 ## Project Schedule
 
