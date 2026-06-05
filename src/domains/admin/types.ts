@@ -10,6 +10,37 @@ export const INTERNAL_SCOPES = [
 
 export type InternalScope = (typeof INTERNAL_SCOPES)[number];
 
+export const INTERNAL_SCOPE_DETAILS: Record<InternalScope, { label: string; description: string }> = {
+  "agents:invoke": {
+    label: "Agent workers",
+    description: "Read run state and write agent run status, steps, actions, and action events.",
+  },
+  "documents:read": {
+    label: "Document readers",
+    description: "Read project document metadata and content needed by internal services.",
+  },
+  "documents:write": {
+    label: "Document writers",
+    description: "Upload documents, append chunks, and write document chunk embeddings.",
+  },
+  "embeddings:write": {
+    label: "Embedding workers",
+    description: "Claim embedding jobs, update job status, and write work item embeddings.",
+  },
+  "projects:read": {
+    label: "Project readers",
+    description: "Search work items, read work item detail, and list child work items.",
+  },
+  "projects:write": {
+    label: "Project writers",
+    description: "Create, update, delete, and reorder work items for internal workflows.",
+  },
+  "sprints:write": {
+    label: "Sprint writers",
+    description: "Create and update sprints, delete sprints, and manage sprint work items.",
+  },
+};
+
 export const SERVICE_TOKEN_STATUSES = ["active", "expired", "revoked"] as const;
 export type ServiceTokenStatus = (typeof SERVICE_TOKEN_STATUSES)[number];
 

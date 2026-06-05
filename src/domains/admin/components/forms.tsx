@@ -3,7 +3,7 @@
 import { Field, Input, Label, Textarea } from "@/atomics";
 import { cn } from "@/shared/utils/cn";
 
-import { INTERNAL_SCOPES, type InternalScope } from "../types";
+import { INTERNAL_SCOPE_DETAILS, INTERNAL_SCOPES, type InternalScope } from "../types";
 
 export function ReasonField({ value, onChange }: { value: string; onChange: (value: string) => void }) {
   return (
@@ -50,12 +50,13 @@ export function ScopePicker({
       <div className="grid gap-2 sm:grid-cols-2">
         {INTERNAL_SCOPES.map(scope => {
           const checked = value.includes(scope);
+          const detail = INTERNAL_SCOPE_DETAILS[scope];
 
           return (
             <label
               key={scope}
               className={cn(
-                "flex cursor-pointer items-center gap-2 rounded-xl border border-border bg-prism-surface-field px-3 py-2 text-sm text-prism-body transition",
+                "flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-prism-surface-field px-3 py-2 text-sm text-prism-body transition",
                 checked && "border-prism-teal-500/30 bg-prism-teal-500/10 text-prism-navy",
               )}
             >
@@ -70,9 +71,13 @@ export function ScopePicker({
 
                   onChange(value.filter(item => item !== scope));
                 }}
-                className="size-4 accent-prism-teal-500"
+                className="mt-1 size-4 shrink-0 accent-prism-teal-500"
               />
-              {scope}
+              <span className="min-w-0">
+                <span className="block font-medium text-prism-heading">{detail.label}</span>
+                <span className="block break-words font-mono text-xs text-prism-muted">{scope}</span>
+                <span className="mt-1 block text-xs leading-5 text-prism-muted">{detail.description}</span>
+              </span>
             </label>
           );
         })}
