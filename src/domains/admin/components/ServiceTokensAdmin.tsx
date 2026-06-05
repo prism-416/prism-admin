@@ -6,22 +6,77 @@ import * as React from "react";
 import { Badge, Button, Card, Dialog, Field, Input, Select } from "@/atomics";
 import { formatDateTime } from "@/shared/utils/format";
 
-import { useIssueServiceApiToken, useRevokeServiceApiToken, useServiceApiTokenHealth, useServiceApiTokens, useUpdateServiceApiToken } from "../hooks";
+import {
+  useIssueServiceApiToken,
+  useRevokeServiceApiToken,
+  useServiceApiTokenHealth,
+  useServiceApiTokens,
+  useUpdateServiceApiToken,
+} from "../hooks";
 import type { InternalScope, IssueServiceApiTokenResponse, ServiceApiTokenInventoryItem, ServiceTokenStatus } from "../types";
 import { SERVICE_TOKEN_STATUSES } from "../types";
 import { ErrorPanel, LoadingPanel, PageHeader, RawTokenPanel, SectionTitle, StatCard, TableShell } from "./common";
 import { ExpirationField, fromDateTimeInput, ReasonField, ScopePicker, toIsoDateTimeInput } from "./forms";
 
+const PAGE_SIZE = 50;
+
+function toOptionalIsoDateTime(value: string) {
+  if (!value) {
+    return undefined;
+  }
+
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
+}
+
+function toOptionalPositiveNumber(value: string) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
+}
+
 export function ServiceTokensAdmin() {
   const [status, setStatus] = React.useState<ServiceTokenStatus | "">("");
   const [serviceName, setServiceName] = React.useState("");
+  const [serviceAccountId, setServiceAccountId] = React.useState("");
+  const [expiresBefore, setExpiresBefore] = React.useState("");
+  const [lastUsedBefore, setLastUsedBefore] = React.useState("");
+  const [expiringWithinDays, setExpiringWithinDays] = React.useState("30");
+  const [staleAfterDays, setStaleAfterDays] = React.useState("90");
   const [issueOpen, setIssueOpen] = React.useState(false);
   const [editingToken, setEditingToken] = React.useState<ServiceApiTokenInventoryItem | null>(null);
   const [revokingToken, setRevokingToken] = React.useState<ServiceApiTokenInventoryItem | null>(null);
   const [rawToken, setRawToken] = React.useState<IssueServiceApiTokenResponse | null>(null);
-  const filters = React.useMemo(() => ({ status, serviceName, limit: 50, offset: 0 }), [serviceName, status]);
+  const filters = React.useMemo(
+    () => ({
+      serviceAccountId: serviceAccountId.trim(),
+      serviceName: serviceName.trim(),
+      status,
+      expiresBefore: toOptionalIsoDateTime(expiresBefore),
+      lastUsedBefore: toOptionalIsoDateTime(lastUsedBefore),
+      limit: PAGE_SIZE,
+      offset: 0,
+    }),
+    [expiresBefore, lastUsedBefore, serviceAccountId, serviceName, status],
+  );
+  const healthParams = React.useMemo(
+    () => ({
+      expiringWithinDays: toOptionalPositiveNumber(expiringWithinDays),
+      staleAfterDays: toOptionalPositiveNumber(staleAfterDays),
+    }),
+    [expiringWithinDays, staleAfterDays],
+  );
   const tokens = useServiceApiTokens(filters);
-  const health = useServiceApiTokenHealth();
+  const health = useServiceApiTokenHealth(healthParams);
+  const expiringWindowDays = health.data?.expiringWithinDays ?? healthParams.expiringWithinDays ?? 30;
+  const staleWindowDays = health.data?.staleAfterDays ?? healthParams.staleAfterDays ?? 90;
+
+  function clearFilters() {
+    setStatus("");
+    setServiceName("");
+    setServiceAccountId("");
+    setExpiresBefore("");
+    setLastUsedBefore("");
+  }
 
   return (
     <>
@@ -40,19 +95,68 @@ export function ServiceTokensAdmin() {
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Total tokens" value={health.data?.totalTokens ?? 0} tone="blue" />
         <StatCard label="Active" value={health.data?.activeTokens ?? 0} tone="success" />
-        <StatCard label="Expiring soon" value={health.data?.expiringSoonTokens ?? 0} tone="warning" />
-        <StatCard label="Stale active" value={health.data?.staleActiveTokens ?? 0} tone="danger" />
+        <StatCard
+          label="Expiring soon"
+          value={health.data?.expiringSoonTokens ?? 0}
+          detail={`Within ${expiringWindowDays} days`}
+          tone="warning"
+        />
+        <StatCard
+          label="Stale active"
+          value={health.data?.staleActiveTokens ?? 0}
+          detail={`Unused for ${staleWindowDays} days`}
+          tone="danger"
+        />
       </div>
 
       <Card>
         <SectionTitle
+          title="Health thresholds"
+          description="These controls use the documented token health query parameters."
+        />
+        <div className="mt-5 grid gap-3 md:grid-cols-[1fr_1fr_auto]">
+          <Field label="Expiring within days">
+            <Input
+              type="number"
+              min={1}
+              max={365}
+              value={expiringWithinDays}
+              onChange={event => setExpiringWithinDays(event.target.value)}
+            />
+          </Field>
+          <Field label="Stale after days">
+            <Input
+              type="number"
+              min={1}
+              max={3650}
+              value={staleAfterDays}
+              onChange={event => setStaleAfterDays(event.target.value)}
+            />
+          </Field>
+          <div className="flex items-end">
+            <Button variant="outline" onClick={() => void health.refetch()} className="w-full">
+              Refresh
+            </Button>
+          </div>
+        </div>
+      </Card>
+
+      <Card>
+        <SectionTitle
           title="Token inventory"
-          description="Filter by service name and status. Raw token values are never returned in inventory."
+          description="Filter by the documented token search fields. Raw token values are never returned in inventory."
         />
 
-        <div className="mt-5 grid gap-3 md:grid-cols-[1fr_220px_auto]">
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_160px_minmax(0,1fr)_minmax(0,1fr)_auto]">
           <Field label="Service name">
             <Input value={serviceName} onChange={event => setServiceName(event.target.value)} placeholder="embedding-worker" />
+          </Field>
+          <Field label="Service account ID">
+            <Input
+              value={serviceAccountId}
+              onChange={event => setServiceAccountId(event.target.value)}
+              placeholder="UUID"
+            />
           </Field>
           <Field label="Status">
             <Select value={status} onChange={event => setStatus(event.target.value as ServiceTokenStatus | "")}>
@@ -64,9 +168,26 @@ export function ServiceTokensAdmin() {
               ))}
             </Select>
           </Field>
-          <div className="flex items-end">
-            <Button variant="outline" onClick={() => void tokens.refetch()} className="w-full">
+          <Field label="Expires before">
+            <Input
+              type="datetime-local"
+              value={expiresBefore}
+              onChange={event => setExpiresBefore(event.target.value)}
+            />
+          </Field>
+          <Field label="Last used before">
+            <Input
+              type="datetime-local"
+              value={lastUsedBefore}
+              onChange={event => setLastUsedBefore(event.target.value)}
+            />
+          </Field>
+          <div className="flex items-end gap-2">
+            <Button variant="outline" onClick={() => void tokens.refetch()}>
               Refresh
+            </Button>
+            <Button variant="ghost" onClick={clearFilters}>
+              Clear
             </Button>
           </div>
         </div>
