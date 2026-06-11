@@ -5,6 +5,8 @@ export const INTERNAL_SCOPES = [
   "embeddings:write",
   "projects:read",
   "projects:write",
+  "pull_requests:write",
+  "repositories:read",
   "sprints:write",
 ] as const;
 
@@ -34,6 +36,14 @@ export const INTERNAL_SCOPE_DETAILS: Record<InternalScope, { label: string; desc
   "projects:write": {
     label: "Project writers",
     description: "Create, update, delete, and reorder work items for internal workflows.",
+  },
+  "pull_requests:write": {
+    label: "Pull request reviewers",
+    description: "Read pull request content and create pull request reviews for internal workflows.",
+  },
+  "repositories:read": {
+    label: "Repository readers",
+    description: "Read connected repository metadata needed by internal GitHub workflows.",
   },
   "sprints:write": {
     label: "Sprint writers",

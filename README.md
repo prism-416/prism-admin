@@ -258,6 +258,9 @@ currently documents these internal service-token endpoints:
 
 | Method | Path | Purpose |
 | --- | --- | --- |
+| `GET` | `/workspaces/{workspaceId}/member-workloads/internal` | Retrieve workload summaries for workspace members for internal workers |
+| `GET` | `/workspaces/{workspaceId}/member-workloads/internal/{userId}` | Retrieve a workspace member workload for internal workers |
+| `GET` | `/projects/work-items/internal/by-code/{taskCode}` | Resolve project id from a work item code for internal workers |
 | `GET` | `/projects/{projectId}/work-items/internal` | Search work items for internal workers |
 | `POST` | `/projects/{projectId}/work-items/internal` | Create work item for internal workers |
 | `GET` | `/projects/{projectId}/work-items/internal/{itemId}` | Get work item detail for internal workers |
@@ -265,14 +268,20 @@ currently documents these internal service-token endpoints:
 | `DELETE` | `/projects/{projectId}/work-items/internal/{itemId}` | Delete work item for internal workers |
 | `GET` | `/projects/{projectId}/work-items/internal/{itemId}/children` | Get work item children for internal workers |
 | `PUT` | `/projects/{projectId}/work-items/internal/{itemId}/embedding` | Upsert work item embedding for internal workers |
+| `POST` | `/projects/{projectId}/work-items/internal/similar` | Find semantically similar work items for internal workers |
 | `PATCH` | `/projects/{projectId}/work-items/internal/reorder` | Reorder top-level work items for internal workers |
+| `GET` | `/projects/{projectId}/pull-requests/internal/{pullNumber}` | Retrieve pull request content for internal workers |
+| `POST` | `/projects/{projectId}/pull-requests/internal/{pullNumber}/reviews` | Create pull request review for internal workers |
+| `POST` | `/workspaces/{workspaceId}/agent-runs/internal` | Create agent run for internal workers |
 | `GET` | `/workspaces/{workspaceId}/agent-runs/internal/{runId}/state` | Retrieve agent run state for internal workers |
 | `PATCH` | `/workspaces/{workspaceId}/agent-runs/internal/{runId}/status` | Update agent run status for internal workers |
 | `POST` | `/workspaces/{workspaceId}/agent-runs/internal/{runId}/steps` | Upsert agent run step for internal workers |
 | `POST` | `/workspaces/{workspaceId}/agent-runs/internal/{runId}/actions` | Upsert agent action for internal workers |
 | `POST` | `/workspaces/{workspaceId}/agent-actions/internal/{actionId}/events` | Create agent action event for internal workers |
+| `POST` | `/workspaces/{workspaceId}/projects/{projectId}/agent-workflows/internal/{trigger}` | Dispatch a scheduled agent workflow for internal schedulers |
 | `POST` | `/workspaces/{workspaceId}/embedding-jobs/internal/claim` | Claim queued embedding jobs for internal workers |
 | `PATCH` | `/workspaces/{workspaceId}/embedding-jobs/internal/{embeddingJobId}` | Update embedding job status for internal workers |
+| `GET` | `/workspaces/{workspaceId}/sprints/internal` | Retrieve workspace sprints for internal workers |
 | `POST` | `/workspaces/{workspaceId}/sprints/internal` | Create sprint for internal workers |
 | `PATCH` | `/workspaces/{workspaceId}/sprints/internal/{sprintId}` | Update sprint metadata for internal workers |
 | `DELETE` | `/workspaces/{workspaceId}/sprints/internal/{sprintId}` | Delete sprint for internal workers |
@@ -281,7 +290,8 @@ currently documents these internal service-token endpoints:
 
 The service token scope picker is aligned to the current backend scope enum:
 `agents:invoke`, `documents:read`, `documents:write`, `embeddings:write`,
-`projects:read`, `projects:write`, and `sprints:write`.
+`projects:read`, `projects:write`, `pull_requests:write`,
+`repositories:read`, and `sprints:write`.
 
 ## Project Schedule
 
