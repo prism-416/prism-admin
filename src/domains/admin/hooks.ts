@@ -15,6 +15,10 @@ import {
   getServiceAccounts,
   getServiceAccountTokens,
   getServiceApiTokenHealth,
+  getUserActiveTrend,
+  getUserActivitySummary,
+  getUserMetricsSummary,
+  getUserSignupTrend,
   issueServiceApiToken,
   revokeServiceApiToken,
   searchAdminAuditEvents,
@@ -29,6 +33,8 @@ import type {
   CreateServiceApiTokenPayload,
   GetEmbeddingJobHealthParams,
   GetServiceApiTokenHealthParams,
+  GetUserActiveTrendParams,
+  GetUserSignupTrendParams,
   IssueServiceApiTokenPayload,
   SearchAdminAuditEventsParams,
   SearchServiceApiTokensParams,
@@ -109,6 +115,42 @@ export function useAdminAuditEvents(params?: SearchAdminAuditEventsParams) {
   return useQuery({
     queryKey: QUERY_KEYS.admin.auditEvents(params),
     queryFn: () => searchAdminAuditEvents(password, params),
+    enabled: Boolean(password),
+  });
+}
+
+export function useUserActivitySummary() {
+  const password = usePassword();
+  return useQuery({
+    queryKey: QUERY_KEYS.admin.userActivity(),
+    queryFn: () => getUserActivitySummary(password),
+    enabled: Boolean(password),
+  });
+}
+
+export function useUserMetricsSummary() {
+  const password = usePassword();
+  return useQuery({
+    queryKey: QUERY_KEYS.admin.userMetrics(),
+    queryFn: () => getUserMetricsSummary(password),
+    enabled: Boolean(password),
+  });
+}
+
+export function useUserSignupTrend(params?: GetUserSignupTrendParams) {
+  const password = usePassword();
+  return useQuery({
+    queryKey: QUERY_KEYS.admin.userSignups(params),
+    queryFn: () => getUserSignupTrend(password, params),
+    enabled: Boolean(password),
+  });
+}
+
+export function useUserActiveTrend(params?: GetUserActiveTrendParams) {
+  const password = usePassword();
+  return useQuery({
+    queryKey: QUERY_KEYS.admin.userActiveTrend(params),
+    queryFn: () => getUserActiveTrend(password, params),
     enabled: Boolean(password),
   });
 }
