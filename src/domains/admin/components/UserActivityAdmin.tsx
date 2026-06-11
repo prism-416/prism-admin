@@ -6,7 +6,7 @@ import { Button, Card, Field, Select } from "@/atomics";
 import { formatDateTime, formatNumber, formatPercent } from "@/shared/utils/format";
 
 import { useUserActiveTrend, useUserActivitySummary, useUserMetricsSummary, useUserSignupTrend } from "../hooks";
-import type { UserActiveBucket, UserSignupBucket } from "../types";
+import type { UserActiveBucket, UserMetricsSummary, UserSignupBucket } from "../types";
 import { ErrorPanel, LoadingPanel, PageHeader, SectionTitle, StatCard } from "./common";
 
 const WINDOW_OPTIONS = [7, 14, 30, 90, 180, 365] as const;
@@ -119,6 +119,16 @@ export function UserActivityAdmin() {
           <StatCard label="Last 24 hours" value={metrics.data?.newUsersLast24h ?? 0} tone="teal" />
           <StatCard label="Last 7 days" value={metrics.data?.newUsersLast7d ?? 0} tone="blue" />
           <StatCard label="Last 30 days" value={metrics.data?.newUsersLast30d ?? 0} tone="blue" />
+        </div>
+      </Card>
+
+      <Card>
+        <SectionTitle
+          title="Lifecycle funnel"
+          description="Share of all users that reach each stage, from signup to an active session. Step rates compare each stage to the one above it."
+        />
+        <div className="mt-5">
+          <LifecycleFunnel metrics={metrics.data} />
         </div>
       </Card>
 
@@ -245,6 +255,72 @@ function SignupChart({ buckets }: { buckets: UserSignupBucket[] }) {
         <span>Peak {formatNumber(maxCount)}/day</span>
         <span>{lastDate}</span>
       </div>
+    </div>
+  );
+}
+
+const FUNNEL_BAR_TONES = [
+  "bg-prism-teal-500",
+  "bg-prism-teal-500/80",
+  "bg-prism-glow-sky/80",
+  "bg-prism-glow-sky/60",
+] as const;
+
+function LifecycleFunnel({ metrics }: { metrics: UserMetricsSummary | null | undefined }) {
+  if (!metrics) {
+    return <p className="text-sm text-prism-muted">No user metrics available yet.</p>;
+  }
+
+  const stages = [
+    { label: "Signed up", value: metrics.totalUsers, detail: "All registered accounts" },
+    { label: "Verified email", value: metrics.verifiedUsers, detail: "Confirmed their email address" },
+    { label: "Joined a workspace", value: metrics.usersInWorkspace, detail: "Belong to at least one workspace" },
+    { label: "Active session", value: metrics.usersWithActiveSession, detail: "Currently signed in" },
+  ];
+
+  const total = stages[0].value;
+
+  if (total <= 0) {
+    return <p className="text-sm text-prism-muted">No users recorded yet.</p>;
+  }
+
+  return (
+    <div className="space-y-3">
+      {stages.map((stage, index) => {
+        const previous = index === 0 ? null : stages[index - 1];
+        const overallPercent = Math.round((stage.value / total) * 100);
+        const dropOff = previous ? previous.value - stage.value : 0;
+
+        return (
+          <div
+            key={stage.label}
+            className="rounded-2xl border border-border bg-prism-surface-field p-4"
+          >
+            <div className="flex items-baseline justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold text-prism-heading">{stage.label}</p>
+                <p className="text-xs text-prism-muted">{stage.detail}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-lg font-semibold text-prism-heading">{formatNumber(stage.value)}</p>
+                <p className="text-xs text-prism-muted">{formatPercent(stage.value, total)} of all users</p>
+              </div>
+            </div>
+            <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-border/60">
+              <div
+                className={`h-full rounded-full ${FUNNEL_BAR_TONES[index] ?? FUNNEL_BAR_TONES[0]}`}
+                style={{ width: `${Math.max(overallPercent, stage.value > 0 ? 2 : 0)}%` }}
+              />
+            </div>
+            {previous ? (
+              <p className="mt-2 text-xs text-prism-muted">
+                {formatPercent(stage.value, previous.value)} of {previous.label.toLowerCase()}
+                {dropOff > 0 ? ` · ${formatNumber(dropOff)} dropped off` : null}
+              </p>
+            ) : null}
+          </div>
+        );
+      })}
     </div>
   );
 }
