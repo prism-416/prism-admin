@@ -14,6 +14,8 @@ import type {
   IssueServiceApiTokenResponse,
   SearchAdminAuditEventsParams,
   SearchAdminAuditEventsResult,
+  GetUserActiveTrendParams,
+  GetUserSignupTrendParams,
   SearchServiceApiTokensParams,
   SearchServiceApiTokensResult,
   ServiceAccount,
@@ -22,6 +24,10 @@ import type {
   ServiceApiTokenHealthSummary,
   UpdateServiceAccountPayload,
   UpdateServiceApiTokenPayload,
+  UserActiveTrend,
+  UserActivitySummary,
+  UserMetricsSummary,
+  UserSignupTrend,
 } from "./types";
 
 const DEFAULT_API_HOST = "https://api.prizmatic.app/dev";
@@ -259,4 +265,20 @@ export function getEmbeddingJobHealth(password: string, params?: GetEmbeddingJob
 
 export function searchAdminAuditEvents(password: string, params?: SearchAdminAuditEventsParams) {
   return requestAdmin<SearchAdminAuditEventsResult>("/admin/audit-events", { password, params });
+}
+
+export function getUserActivitySummary(password: string) {
+  return requestAdmin<UserActivitySummary>("/admin/users/activity", { password });
+}
+
+export function getUserMetricsSummary(password: string) {
+  return requestAdmin<UserMetricsSummary>("/admin/users/metrics", { password });
+}
+
+export function getUserSignupTrend(password: string, params?: GetUserSignupTrendParams) {
+  return requestAdmin<UserSignupTrend>("/admin/users/signups", { password, params });
+}
+
+export function getUserActiveTrend(password: string, params?: GetUserActiveTrendParams) {
+  return requestAdmin<UserActiveTrend>("/admin/users/activity/trend", { password, params });
 }

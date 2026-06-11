@@ -251,3 +251,61 @@ export type UpdateServiceApiTokenPayload = {
 export type AdminMutationOptions = {
   reason?: string;
 };
+
+export type UserActivitySummary = {
+  generatedAt: string;
+  dau: number;
+  wau: number;
+  mau: number;
+  stickiness: number | null;
+};
+
+export type UserMetricsSummary = {
+  generatedAt: string;
+  totalUsers: number;
+  verifiedUsers: number;
+  unverifiedUsers: number;
+  usersWithEmailAuth: number;
+  usersWithGoogleAuth: number;
+  usersWithGithubAuth: number;
+  usersWithOauthAuth: number;
+  usersWithActiveSession: number;
+  usersInWorkspace: number;
+  usersWithoutWorkspace: number;
+  newUsersLast24h: number;
+  newUsersLast7d: number;
+  newUsersLast30d: number;
+};
+
+export type UserSignupBucket = {
+  date: string;
+  count: number;
+};
+
+export type UserSignupTrend = {
+  generatedAt: string;
+  windowDays: number;
+  totalSignups: number;
+  buckets: UserSignupBucket[];
+};
+
+export type UserActiveBucket = {
+  date: string;
+  activeUsers: number;
+  newUsers: number;
+  returningUsers: number;
+};
+
+export type UserActiveTrend = {
+  generatedAt: string;
+  windowDays: number;
+  buckets: UserActiveBucket[];
+};
+
+export type GetUserSignupTrendParams = {
+  windowDays?: number;
+};
+
+export type GetUserActiveTrendParams = {
+  windowDays?: number;
+};

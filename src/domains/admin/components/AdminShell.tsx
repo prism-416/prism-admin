@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, ClipboardList, DatabaseZap, KeyRound, LayoutDashboard, Lock, Menu, ServerCog, X } from "lucide-react";
+import { Activity, ClipboardList, DatabaseZap, KeyRound, LayoutDashboard, Lock, Menu, ServerCog, Users, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
@@ -12,6 +12,7 @@ import { useAdminSession } from "../session";
 
 const navItems = [
   { href: "/", label: "Overview", icon: LayoutDashboard },
+  { href: "/users", label: "User activity", icon: Users },
   { href: "/service-accounts", label: "Service accounts", icon: ServerCog },
   { href: "/service-tokens", label: "Service tokens", icon: KeyRound },
   { href: "/embeddings", label: "Embeddings", icon: DatabaseZap },
